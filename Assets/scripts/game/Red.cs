@@ -36,7 +36,7 @@ namespace Infection
                         break;
                     case SubState.Fight:
                         transform.position = lastPosition;
-                        transform.position = new Vector2(transform.position.x + UnityEngine.Random.Range(-0.1f, 0.1f), transform.position.x + UnityEngine.Random.Range(-0.1f, 0.1f));
+                        transform.position = new Vector2(transform.position.x + UnityEngine.Random.Range(-0.05f, 0.05f), transform.position.x + UnityEngine.Random.Range(-0.05f, 0.05f));
                         break;
                 }
             }
@@ -57,6 +57,7 @@ namespace Infection
                     {
                         IPlayable p = other.GetComponent<IPlayable>();
                         Fight(p);
+                        p.Fight(this);
                     }
                 }
             }
