@@ -25,6 +25,7 @@ namespace Infection
         {
             base.Init(position);
             this.subState = SubState.Walk;
+            this.live = Constants.GREEN_LIVE;
             this.subStateCount = 0;
             this.subStateTime = UnityEngine.Random.Range(minWalkDuration, maxWalkDuration);
         }
@@ -46,16 +47,10 @@ namespace Infection
                         }
                         break;
                     case SubState.Walk:
-
-
-
-
-                        if (!IsInGameArea(transform.position))
+                        if (!IsInGameArea(transform.position, Constants.GAME_AREA_MARGIN_ACTION_ZONE))
                         {
-                            ChangeDirection();
+                            ChangeDirection(40);
                         }
-
-
                         lastPosition = transform.position;
                         Vector2 direction = new Vector2(Mathf.Cos(Mathf.Deg2Rad * angle), Mathf.Sin(Mathf.Deg2Rad * angle));
                         transform.Translate(direction * speed * Time.deltaTime, Space.World);
@@ -68,7 +63,16 @@ namespace Infection
                         break;
                     case SubState.Fight:
                         transform.position = lastPosition;
-                        transform.position = new Vector2(transform.position.x + UnityEngine.Random.Range(-0.05f, 0.05f), transform.position.x + UnityEngine.Random.Range(-0.05f, 0.05f));
+                        transform.position = new Vector2(transform.position.x + UnityEngine.Random.Range(-0.02f, 0.02f), transform.position.y + UnityEngine.Random.Range(-0.02f, 0.02f));
+                        if(opponent != null && opponent.state != State.Death)
+                        {
+                            opponent.DoHealth(Constants.GREEN_ATACK);
+                        }
+                        else
+                        {
+                            subState = SubState.Walk;
+                            opponent = null;
+                        }
                         break;
                 }
             }
@@ -83,7 +87,7 @@ namespace Infection
                 {
                     if (other.GetComponent<Green>())
                     {
-                        ChangeDirection();
+                        ChangeDirection(0);
                     }
                 }
             }
@@ -94,7 +98,24 @@ namespace Infection
             if (state == State.Run)
             {
                 this.subState = SubState.Fight;
+                SetOponent(other);
             }
         }
+
+        public void SetOponent(IPlayable other)
+        {
+            this.opponent = (GameElement)other;
+        }
+
+        public override void DoDestroy()
+        {
+            if(state != State.Death)
+            {
+                state = State.Death;
+                StartCoroutine(Scale(this.transform, 0.5f, new Vector2(0,0), () => Destroy()));
+            }
+        }
+
+        
     }
 }

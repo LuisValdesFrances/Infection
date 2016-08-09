@@ -7,7 +7,7 @@ namespace Infection
 {
     public interface IPlayable
     {
+        void SetOponent(IPlayable other);
         void Fight(IPlayable other);
-
     }
 }

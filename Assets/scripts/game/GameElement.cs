@@ -4,12 +4,33 @@ using System;
 
 namespace Infection
 {
-    public class GameElement : MonoBehaviour
+    public abstract class GameElement : MonoBehaviour
     {
         [SerializeField]
         protected float speed;
+        [SerializeField]
+        public float live{ get;  protected set; }
+        [SerializeField]
+        public float atack { get;  protected set; }
 
-        public enum State { Init, Run, Dead};
+        public delegate void DestroyEventElement(GameElement element);
+        public event DestroyEventElement OnDestroyed;//Event is a delegate type and it will call width a delegate param
+
+        public void DoHealth(float atack)
+        {
+            if(state == State.Run && live > 0)
+            {
+                live -= atack;
+                if(live <= 0)
+                {
+                    DoDestroy();
+                }
+            }
+        }
+
+        public GameElement opponent { get; protected set; }
+
+        public enum State { Init, Run, Death};
         public State state;//{ get;  protected set; }
 
         protected Vector2 lastPosition;
@@ -21,8 +42,10 @@ namespace Infection
 
         public virtual void Init(Vector2 position)
         {
+            this.gameObject.SetActive(true);
             this.transform.position = position;
             this.lastPosition = transform.position;
+            this.opponent = null;
             this.state = State.Init;
             this.transform.localScale = new Vector2(0, 0);
             this.StartInitAnimation(transform, 0.5f);
@@ -65,16 +88,27 @@ namespace Infection
             }
         }
 
-        protected bool IsInGameArea(Vector2 position)
+        public abstract void DoDestroy();
+
+        protected void Destroy()
         {
-            return GameManager.GetInstance.
-                GetRectGameDimension(Constants.GAME_AREA_MARGIN).Contains(position);
+            this.gameObject.SetActive(false);
+            if (OnDestroyed != null)
+            {
+                OnDestroyed(this);
+            }
         }
 
-        protected void ChangeDirection()
+        protected bool IsInGameArea(Vector2 position, float margin)
+        {
+            return GameManager.GetInstance.
+                GetRectGameDimension(margin).Contains(position);
+        }
+
+        protected void ChangeDirection(float randomDesviation)
         {
             transform.position = lastPosition;
-            angle += (180 + UnityEngine.Random.Range(-45, 45)) % 360;
+            angle += (180 + UnityEngine.Random.Range(-randomDesviation, randomDesviation)) % 360;
         }
 
     }

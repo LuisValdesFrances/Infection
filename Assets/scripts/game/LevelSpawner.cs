@@ -58,7 +58,7 @@ namespace Infection
                 int r = UnityEngine.Random.Range(0, 2);
                 if(r == 0)
                 {
-                    p.x = -GameManager.GetInstance.gameWidth / 2;
+                    p.x = -GameManager.GetInstance.gameWidth/2;
                 }
                 else
                 {
@@ -79,26 +79,32 @@ namespace Infection
             {
                 g = listGreen.Dequeue();
             }
+            g.OnDestroyed += HideGameElement;
             g.Init(position);
         }
 
         public void InstanceRed(Vector2 position)
         {
             GameElement g;
-            if (listGreen.Count == 0)
+            if (listRed.Count == 0)
             {
                 g = UnityEngine.Object.Instantiate<GameElement>(red);
             }
             else
             {
-                g = listGreen.Dequeue();
+                g = listRed.Dequeue();
             }
+            g.OnDestroyed += HideGameElement;
             g.Init(position);
         }
 
         public void HideGameElement(GameElement element)
         {
-            listGreen.Enqueue(element);
+            element.OnDestroyed -= HideGameElement;
+            if (element.GetComponent<Green>())
+                listGreen.Enqueue(element);
+            else if (element.GetComponent<Red>())
+                listRed.Enqueue(element);
         }
     }
 }

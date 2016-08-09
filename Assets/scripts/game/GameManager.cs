@@ -49,6 +49,7 @@ namespace Infection
             Debug.DrawLine(new Vector3(r.xMax, r.yMax, 0), new Vector3(r.xMax, r.yMin, 0), Color.white);//Right
             Debug.DrawLine(new Vector3(r.xMin, r.yMin, 0), new Vector3(r.xMax, r.yMin, 0), Color.white);//Button
 
+            r = GetRectGameDimension(Constants.GAME_AREA_MARGIN_ACTION_ZONE);
             Debug.DrawLine(new Vector3(r.xMin, r.yMax, 0), new Vector3(r.xMax, r.yMax, 0), Color.magenta);//Top
             Debug.DrawLine(new Vector3(r.xMin, r.yMax, 0), new Vector3(r.xMin, r.yMin, 0), Color.magenta);//Left
             Debug.DrawLine(new Vector3(r.xMax, r.yMax, 0), new Vector3(r.xMax, r.yMin, 0), Color.magenta);//Right
